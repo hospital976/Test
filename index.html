@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#07150f"><title>GameCard — Digital Gaming Cards</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="#"><span class="brand-mark">G</span> GAME<span>CARD</span></a>
+  <nav><a href="#catalog">Cards</a><a href="#wallet">Wallet</a><a href="#history">History</a></nav>
+  <div class="top-actions"><span id="user-label" class="muted">Guest</span><button id="open-auth" class="btn btn-outline">Login</button><button id="logout" class="btn btn-quiet hidden">Logout</button></div>
+</header>
+<main class="wrap">
+  <section class="hero">
+    <div><p class="eyebrow">DIGITAL GAMING STORE</p><h1>Level up.<br><em>Instantly.</em></h1><p class="muted">Premium digital gaming cards. Simple, secure and straightforward.</p><a class="btn btn-primary" href="#catalog">Explore cards</a></div>
+    <div class="hero-card"><div class="chip"></div><div class="contactless">)))</div><small>GAMECARD DIGITAL</small><strong>YOUR NEXT<br>LEVEL STARTS HERE</strong><span>SECURE DIGITAL DELIVERY</span></div>
+  </section>
+
+  <section id="wallet" class="section">
+    <div class="section-head"><div><p class="eyebrow">YOUR ACCOUNT</p><h2>Wallet</h2></div><span id="wallet-status" class="pill">Login required</span></div>
+    <div class="wallet-panel"><div><small class="muted">AVAILABLE BALANCE</small><div id="balance" class="balance">₹ —</div><small class="muted">INR wallet</small></div><button class="btn btn-primary" id="deposit-open">＋ Deposit</button></div>
+    <div id="deposit-panel" class="panel hidden">
+      <h3>Submit deposit request</h3>
+      <p class="muted small">Minimum deposit ₹500. Your wallet is credited only after admin verifies the actual payment.</p>
+      <div class="method-row"><button class="method active" data-method="UPI">UPI</button><button class="method" data-method="USDT">USDT · BEP20</button></div>
+      <div id="upi-details" class="payment-details"><b>UPI ID</b><div class="copyline"><code>luciferrx@slc</code><button class="btn btn-quiet copy" data-copy="luciferrx@slc">Copy</button></div><p class="muted small">Pay from your UPI app, then submit the UTR/reference number below.</p></div>
+      <div id="usdt-details" class="payment-details hidden"><b>USDT receiving address · BEP20</b><div class="copyline"><code class="break">0xfb9e19da173d6f80f420820db5a30024928b3fb1</code><button class="btn btn-quiet copy" data-copy="0xfb9e19da173d6f80f420820db5a30024928b3fb1">Copy</button></div><p class="muted small">Send only USDT on BNB Smart Chain (BEP20). Sending another token/network may cause permanent loss. Verify the exact amount and address before sending.</p></div>
+      <form id="deposit-form" class="form-grid"><label>Amount (INR equivalent)<input id="deposit-amount" type="number" min="500" step="0.01" required placeholder="500"></label><label id="reference-label">UPI UTR / reference number<input id="deposit-reference" required maxlength="150" placeholder="Enter transaction reference"></label><label class="wide">Proof image URL (optional)<input id="deposit-proof" type="url" placeholder="https://..."></label><button class="btn btn-primary" type="submit">Submit for admin verification</button></form>
+      <p id="deposit-message" class="small muted"></p>
+    </div>
+  </section>
+
+  <section id="catalog" class="section">
+    <div class="section-head"><div><p class="eyebrow">CURATED DIGITAL GOODS</p><h2>Gaming cards</h2></div><span class="muted small">Up to 15 products</span></div>
+    <div id="products" class="product-grid"><div class="empty">Connect Supabase to load your catalogue.</div></div>
+  </section>
+
+  <section id="history" class="section">
+    <div class="section-head"><div><p class="eyebrow">ACCOUNT ACTIVITY</p><h2>My history</h2></div></div>
+    <div id="history-list" class="panel muted">Login to view your deposits, orders and refund requests.</div>
+  </section>
+
+  <section id="admin" class="section hidden">
+    <div class="section-head"><div><p class="eyebrow">RESTRICTED AREA</p><h2>Admin console</h2></div><span class="pill green">Admin access</span></div>
+    <div class="admin-tabs"><button class="tab active" data-tab="manage">Cards</button><button class="tab" data-tab="deposits">Deposits</button><button class="tab" data-tab="orders">Orders</button><button class="tab" data-tab="refunds">Refunds</button></div>
+    <div id="admin-manage" class="panel"><div class="section-head"><h3>Manage cards</h3><button id="add-product" class="btn btn-primary">＋ Add card</button></div><div id="admin-products"></div></div>
+    <div id="admin-deposits" class="panel hidden"><h3>Deposit requests</h3><div id="admin-deposit-list"></div></div>
+    <div id="admin-orders" class="panel hidden"><h3>Orders</h3><div id="admin-order-list"></div></div>
+    <div id="admin-refunds" class="panel hidden"><h3>Refund requests</h3><div id="admin-refund-list"></div></div>
+  </section>
+</main>
+
+<dialog id="auth-dialog"><form method="dialog" class="dialog-close"><button class="x">×</button></form><p class="eyebrow">GAMECARD ACCOUNT</p><h2 id="auth-title">Login</h2><form id="auth-form" class="form-grid"><label>Email<input id="auth-email" type="email" required></label><label>Password<input id="auth-password" type="password" minlength="8" required></label><button class="btn btn-primary" id="auth-submit" type="submit">Login</button></form><button id="toggle-auth" class="text-button">Create an account</button><p id="auth-message" class="small muted"></p></dialog>
+
+<dialog id="product-dialog"><form method="dialog" class="dialog-close"><button class="x">×</button></form><p class="eyebrow">ADMIN PRODUCT EDITOR</p><h2 id="product-dialog-title">Add card</h2><form id="product-form" class="form-grid"><input id="product-id" type="hidden"><label>Card name<input id="product-name" required maxlength="100"></label><label>Price (₹)<input id="product-price" type="number" min="0" step=".01" required></label><label>Quantity<input id="product-stock" type="number" min="0" step="1" required></label><label>Category<input id="product-category" maxlength="60"></label><label class="wide">Description<textarea id="product-description" rows="3"></textarea></label><label class="wide">Card image URL<input id="product-image" type="url" placeholder="Upload to product-assets bucket, then paste public URL"></label><label class="wide">Logo URL<input id="product-logo" type="url" placeholder="Optional logo URL"></label><label>Active<select id="product-active"><option value="true">Yes</option><option value="false">No</option></select></label><button class="btn btn-primary" type="submit">Save card</button></form><p id="product-message" class="small muted"></p></dialog>
+<footer><span>© GameCard</span><span class="muted">Digital products · Manual payment verification</span></footer>
+<script src="app.js"></script>
+</body></html>
